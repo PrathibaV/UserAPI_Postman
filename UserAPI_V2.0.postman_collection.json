@@ -1,0 +1,1395 @@
+{
+	"info": {
+		"_postman_id": "d5cc69e0-2d5f-48b1-8da3-90c203f52047",
+		"name": "UserAPI_V2.0",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33024937"
+	},
+	"item": [
+		{
+			"name": "Create user without authorization",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"commonTests.unauthorizedRequest();\r",
+							"commonTests.responseTime();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"user_first_name\":  \"{{user_first_name}}\",\r\n \"user_last_name\":  \"{{user_last_name}}\",        \r\n \"user_contact_number\": \"{{user_contact_number}}\",   \r\n \"user_email_id\": \"{{user_email_id}}\",\r\n\r\n\"userAddress\": {\r\n   \"plotNumber\": \"{{plotNumber}}\",\r\n   \"street\": \"{{street}}\",\r\n   \"state\": \"{{state}}\",\r\n    \"country\": \"{{country}}\",\r\n   \"zipCode\": \"{{zipCode}}\"\r\n }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}{{postEndpoint}}",
+					"host": [
+						"{{baseURL}}{{postEndpoint}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create user with invalid baseURL",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"commonTests.notFoundRequest();\r",
+							"commonTests.responseTime();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"user_first_name\":  \"{{user_first_name}}\",\r\n \"user_last_name\":  \"{{user_last_name}}\",        \r\n \"user_contact_number\": \"{{user_contact_number}}\",   \r\n \"user_email_id\": \"{{user_email_id}}\",\r\n\r\n\"userAddress\": {\r\n   \"plotNumber\": \"{{plotNumber}}\",\r\n   \"street\": \"{{street}}\",\r\n   \"state\": \"{{state}}\",\r\n    \"country\": \"{{country}}\",\r\n   \"zipCode\": \"{{zipCode}}\"\r\n }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{invalidBaseURL}}{{postEndpoint}}",
+					"host": [
+						"{{invalidBaseURL}}{{postEndpoint}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create user with invalid endpoint",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"commonTests.notFoundRequest();\r",
+							"commonTests.responseTime();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"user_first_name\":  \"{{user_first_name}}\",\r\n \"user_last_name\":  \"{{user_last_name}}\",        \r\n \"user_contact_number\": \"{{user_contact_number}}\",   \r\n \"user_email_id\": \"{{user_email_id}}\",\r\n\r\n\"userAddress\": {\r\n   \"plotNumber\": \"{{plotNumber}}\",\r\n   \"street\": \"{{street}}\",\r\n   \"state\": \"{{state}}\",\r\n    \"country\": \"{{country}}\",\r\n   \"zipCode\": \"{{zipCode}}\"\r\n }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}{{invalidEndpoint}}",
+					"host": [
+						"{{baseURL}}{{invalidEndpoint}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create user with valid and invalid request body",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							" var jsondata = pm.response.json();\r",
+							"var scenario = pm.variables.get(\"scenario\");\r",
+							"var expectedMessage = pm.variables.get(\"expectedMessage\");\r",
+							"\r",
+							" if (scenario === \"create with all fields\") {\r",
+							"    var userId = jsondata.user_id;\r",
+							"    \r",
+							"    //initializing array if not set\r",
+							"    var userIds = pm.collectionVariables.get(\"userIds\");\r",
+							"    if (!userIds) {\r",
+							"        userIds = [];\r",
+							"    } else {\r",
+							"        userIds = JSON.parse(userIds);\r",
+							"    }\r",
+							"    \r",
+							"    userIds.push(userId);    \r",
+							"    pm.collectionVariables.set(\"userIds\", JSON.stringify(userIds));\r",
+							"    pm.collectionVariables.set(\"userFirstName\", jsondata.user_first_name);\r",
+							"\r",
+							"    commonTests.validPostRequest();\r",
+							"    commonTests.responseTime();\r",
+							"    commonTests.headerValidations();\r",
+							"    commonTests.PostSchemaValidation();\r",
+							"\r",
+							"    pm.test(\"Data validations in the response body\", () => {\r",
+							"pm.expect(jsondata.user_id).is.not.null;\r",
+							"pm.expect(jsondata.user_first_name).to.be.equal(pm.variables.get(\"firstName\"));\r",
+							"pm.expect(jsondata.user_last_name).to.be.equal(pm.variables.get(\"lastName\"));\r",
+							"pm.expect(jsondata.user_contact_number).to.be.equal(pm.variables.get(\"contactNumber\"));\r",
+							"pm.expect(jsondata.user_email_id).to.be.equal(pm.variables.get(\"emailID\"));\r",
+							"pm.expect(jsondata.creation_time).is.not.null;\r",
+							"pm.expect(jsondata.last_mod_time).is.not.null;\r",
+							"pm.expect(jsondata.userAddress.addressId).is.not.null;\r",
+							"pm.expect(jsondata.userAddress.plotNumber).to.be.equal(pm.variables.get(\"plotNumber\"));\r",
+							"pm.expect(jsondata.userAddress.street).to.be.equal(pm.variables.get(\"street\"));\r",
+							"pm.expect(jsondata.userAddress.state).to.be.equal(pm.variables.get(\"state\"));\r",
+							"pm.expect(jsondata.userAddress.country).to.be.equal(pm.variables.get(\"country\"));\r",
+							"pm.expect(jsondata.userAddress.zipCode).to.be.equal(pm.variables.get(\"zipCode\"));\r",
+							"});\r",
+							" } else if (scenario === \"create with only mandatory fields\") {\r",
+							"     commonTests.validPostRequest();\r",
+							"    commonTests.responseTime();\r",
+							"    commonTests.headerValidations();\r",
+							"    pm.test(\"Data validations in the response body\", () => {\r",
+							"pm.expect(jsondata.user_id).is.not.null;\r",
+							"pm.expect(jsondata.user_first_name).to.be.equal(pm.variables.get(\"firstName\"));\r",
+							"pm.expect(jsondata.user_last_name).to.be.equal(pm.variables.get(\"lastName\"));\r",
+							"pm.expect(jsondata.user_contact_number).to.be.equal(pm.variables.get(\"contactNumber\"));\r",
+							"pm.expect(jsondata.user_email_id).to.be.equal(pm.variables.get(\"emailID\"));\r",
+							"pm.expect(jsondata.creation_time).is.not.null;\r",
+							"pm.expect(jsondata.last_mod_time).is.not.null;\r",
+							"pm.expect(jsondata.userAddress.addressId).is.not.null;\r",
+							"pm.expect(jsondata.userAddress.plotNumber).is.null;\r",
+							"pm.expect(jsondata.userAddress.street).is.null;\r",
+							"pm.expect(jsondata.userAddress.state).is.null;\r",
+							"pm.expect(jsondata.userAddress.country).is.null;\r",
+							"pm.expect(jsondata.userAddress.zipCode).is.null;\r",
+							"});\r",
+							" } else if (scenario === \"create with existing contact number\" || scenario === \"create with existing email id\" ) {\r",
+							"    commonTests.conflictRequest();\r",
+							"    pm.test(scenario, () => {\r",
+							"pm.expect(jsondata.message).to.be.equal(expectedMessage);\r",
+							"});\r",
+							" } else {\r",
+							"    commonTests.invalidInputsRequest();\r",
+							"    pm.test(scenario, () => {\r",
+							"pm.expect(jsondata.message).to.be.equal(expectedMessage);\r",
+							"});\r",
+							" }\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"user_first_name\":  \"{{user_first_name}}\",\r\n \"user_last_name\":  \"{{user_last_name}}\",        \r\n \"user_contact_number\": \"{{user_contact_number}}\",   \r\n \"user_email_id\": \"{{user_email_id}}\",\r\n\r\n\"userAddress\": {\r\n   \"plotNumber\": \"{{plotNumber}}\",\r\n   \"street\": \"{{street}}\",\r\n   \"state\": \"{{state}}\",\r\n    \"country\": \"{{country}}\",\r\n   \"zipCode\": \"{{zipCode}}\"\r\n }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}{{postEndpoint}}",
+					"host": [
+						"{{baseURL}}{{postEndpoint}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all users without authorization",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"commonTests.unauthorizedRequest();\r",
+							"commonTests.responseTime();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}{{getAllEndpoint}}",
+					"host": [
+						"{{baseURL}}{{getAllEndpoint}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all users",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const scenarios = [\r",
+							"    { name: \"get all users\", url: pm.environment.get(\"baseURL\") + pm.environment.get(\"getAllEndpoint\")},\r",
+							"    { name: \"get all users with invalid baseURL\", url: pm.environment.get(\"invalidBaseURL\") + pm.environment.get(\"getAllEndpoint\")},\r",
+							"    { name: \"get all users with invalid endpoint\", url: pm.environment.get(\"baseURL\") + pm.environment.get(\"invalidEndpoint\")}\r",
+							"];\r",
+							" \r",
+							"// Initialize scenario index if not set\r",
+							"if (!pm.environment.get(\"scenarioIndex\")) {\r",
+							"    pm.environment.set(\"scenarioIndex\", 0);\r",
+							"}\r",
+							"\r",
+							"let scenarioIndex = pm.environment.get(\"scenarioIndex\");\r",
+							"\r",
+							"// Check if scenario index is within bounds\r",
+							"if (scenarioIndex < scenarios.length) {\r",
+							"    let currentScenario = scenarios[scenarioIndex];\r",
+							"    pm.request.url = currentScenario.url;\r",
+							"\r",
+							"    // Log for debugging\r",
+							"    console.log(`Current Scenario: ${currentScenario.name}`);\r",
+							"    console.log(`Request URL: ${pm.request.url}`);\r",
+							"} else {\r",
+							"    pm.environment.unset(\"scenarioIndex\");\r",
+							"    pm.execution.setNextRequest(\"Get user by ID without authorization\");\r",
+							"}\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const scenarios = [\r",
+							"    { name: \"get all users\", expected: commonTests.validGetPutRequest },    \r",
+							"    { name: \"get all users with invalid baseURL\", expected: commonTests.notFoundRequest },\r",
+							"    { name: \"get all users with invalid endpoint\", expected: commonTests.notFoundRequest }\r",
+							"];\r",
+							"\r",
+							"let scenarioIndex = pm.environment.get(\"scenarioIndex\");\r",
+							"\r",
+							"if (scenarioIndex < scenarios.length) {\r",
+							"    let currentScenario = scenarios[scenarioIndex];\r",
+							"\r",
+							"    try {\r",
+							"        currentScenario.expected(); \r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);\r",
+							"    } catch (error) {\r",
+							"        console.error(`Test failed for ${currentScenario.name}: ${error.message}`);\r",
+							"    }\r",
+							"    if (scenarioIndex < scenarios.length -1) {\r",
+							"    pm.environment.set(\"scenarioIndex\", scenarioIndex + 1);\r",
+							"\r",
+							"    pm.execution.setNextRequest(pm.info.requestName);\r",
+							"} else {\r",
+							"    pm.environment.unset(\"scenarioIndex\"); \r",
+							"    pm.execution.setNextRequest(\"Get user by ID without authorization\"); \r",
+							"}\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Get user by ID without authorization",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var userIds = pm.collectionVariables.get(\"userIds\");\r",
+							"userIds = JSON.parse(userIds);\r",
+							"var userIdToGet = userIds[0];\r",
+							"\r",
+							"pm.request.url  = pm.environment.get(\"baseURL\") + pm.environment.get(\"getByIdEndpoint\") + userIdToGet;\r",
+							"\r",
+							"\r",
+							"   /* pm.sendRequest({\r",
+							"        url: pm.environment.get(\"baseURL\") + pm.environment.get(\"getByIdEndpoint\") + userIdToGet,\r",
+							"        method: \"GET\",\r",
+							"        header: {\r",
+							"            \"Content-Type\": \"application/json\"\r",
+							"        }\r",
+							"    }, function (err, res) {\r",
+							"        // The test has been removed\r",
+							"        if (err) {\r",
+							"            console.error(\"Request failed:\", err);\r",
+							"        } else {\r",
+							"            console.log(\"Response received:\", res);\r",
+							"        }\r",
+							"    });\r",
+							"} */\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"commonTests.unauthorizedRequest();\r",
+							"commonTests.responseTime();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user by ID",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var userIds = pm.collectionVariables.get(\"userIds\");\r",
+							"userIds = JSON.parse(userIds);\r",
+							"var userIdToGet = userIds[0];\r",
+							"\r",
+							"const scenarios = [\r",
+							"    { name: \"get by ID\", url: pm.environment.get(\"baseURL\") + pm.environment.get(\"getByIdEndpoint\") + userIdToGet},\r",
+							"    { name: \"get by ID with invalid baseURL\", url: pm.environment.get(\"invalidBaseURL\") + pm.environment.get(\"getByIdEndpoint\") + userIdToGet},\r",
+							"    { name: \"get by ID with invalid endpoint\", url: pm.environment.get(\"baseURL\") + pm.environment.get(\"invalidEndpoint\") + userIdToGet},\r",
+							"    { name: \"get by ID with special characters\", url: pm.environment.get(\"baseURL\") + pm.environment.get(\"getByIdEndpoint\") + pm.collectionVariables.get(\"userIDSplChar\")},\r",
+							"    { name: \"get by ID with alphabets\", url: pm.environment.get(\"baseURL\")  + pm.environment.get(\"getByIdEndpoint\") + pm.collectionVariables.get(\"userIDChar\")},\r",
+							"    { name: \"get by non-existing ID\", url: pm.environment.get(\"baseURL\")  + pm.environment.get(\"getByIdEndpoint\") + pm.collectionVariables.get(\"userIDNon\")}\r",
+							"];\r",
+							" \r",
+							"if (!pm.environment.get(\"scenarioIndex\")) {\r",
+							"    pm.environment.set(\"scenarioIndex\", 0);\r",
+							"}\r",
+							"\r",
+							"let scenarioIndex = pm.environment.get(\"scenarioIndex\");\r",
+							"\r",
+							"if (scenarioIndex < scenarios.length) {\r",
+							"    let currentScenario = scenarios[scenarioIndex];\r",
+							"    pm.request.url = currentScenario.url;\r",
+							"} else {\r",
+							"    pm.environment.unset(\"scenarioIndex\");\r",
+							"    pm.execution.setNextRequest(\"Get user by firstName\");\r",
+							"}\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const scenarios = [\r",
+							"    { name: \"get by ID\", expected: commonTests.validGetPutRequest },    \r",
+							"    { name: \"get by ID with invalid baseURL\", expected: commonTests.notFoundRequest },\r",
+							"    { name: \"get by ID with invalid endpoint\", expected: commonTests.notFoundRequest },\r",
+							"    { name: \"get by ID with special characters\", expected: commonTests.notFoundRequest },\r",
+							"    { name: \"get by ID with alphabets\", expected: commonTests.notFoundRequest },\r",
+							"    { name: \"get by non-existing ID\", expected: commonTests.notFoundRequest }\r",
+							"];\r",
+							"\r",
+							"let scenarioIndex = pm.environment.get(\"scenarioIndex\");\r",
+							"\r",
+							"if (scenarioIndex < scenarios.length) {\r",
+							"    let currentScenario = scenarios[scenarioIndex];\r",
+							"\r",
+							"   try {\r",
+							"    if (currentScenario.name === \"get by ID\" || \r",
+							"        currentScenario.name === \"get by ID with invalid baseURL\" || \r",
+							"        currentScenario.name === \"get by ID with invalid endpoint\") {\r",
+							"        \r",
+							"        currentScenario.expected();\r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);\r",
+							"        \r",
+							"    } else if (currentScenario.name === \"get by ID with special characters\") {\r",
+							"        currentScenario.expected();\r",
+							"        var jsondata = pm.response.json();\r",
+							"        const userID = pm.collectionVariables.get(\"userIDSplChar\");\r",
+							"        \r",
+							"        pm.test(\"User ID with special characters error message\", () => {\r",
+							"            pm.expect(jsondata.message).to.be.equal(`User with userId ${userID} not found!`);\r",
+							"        });\r",
+							"        \r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);\r",
+							"        \r",
+							"    } else if (currentScenario.name === \"get by ID with alphabets\") {\r",
+							"        currentScenario.expected();\r",
+							"        var jsondata = pm.response.json();\r",
+							"        const userID = pm.collectionVariables.get(\"userIDChar\");\r",
+							"        \r",
+							"        pm.test(\"User ID with alphabets error message\", () => {\r",
+							"            pm.expect(jsondata.message).to.be.equal(`User with userId ${userID} not found!`);\r",
+							"        });\r",
+							"        \r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);\r",
+							"        \r",
+							"    } else if (currentScenario.name === \"get by non-existing ID\") {\r",
+							"        currentScenario.expected();\r",
+							"        var jsondata = pm.response.json();\r",
+							"        const userID = pm.collectionVariables.get(\"userIDNon\");\r",
+							"        \r",
+							"        pm.test(\"User ID non-existing error message\", () => {\r",
+							"            pm.expect(jsondata.message).to.be.equal(`User with userId ${userID} not found!`);\r",
+							"        });\r",
+							"        \r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);        \r",
+							"    }\r",
+							"} catch (error) {\r",
+							"    console.error(`Test failed for ${currentScenario.name}: ${error.message}`);\r",
+							"}\r",
+							"    if (scenarioIndex < scenarios.length -1) {\r",
+							"    pm.environment.set(\"scenarioIndex\", scenarioIndex + 1);\r",
+							"\r",
+							"    pm.execution.setNextRequest(pm.info.requestName);\r",
+							"} else {\r",
+							"    pm.environment.unset(\"scenarioIndex\"); \r",
+							"    pm.execution.setNextRequest(\"Get user by firstName\"); \r",
+							"}\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user by firstName",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const scenarios = [\r",
+							"    { name: \"get by firstName\", url: pm.environment.get(\"baseURL\") + pm.environment.get(\"getByNameEndpoint\") + pm.collectionVariables.get(\"userFirstName\")},\r",
+							"    { name: \"get by firstName with invalid baseURL\", url: pm.environment.get(\"invalidBaseURL\") +  pm.environment.get(\"getByNameEndpoint\") + pm.collectionVariables.get(\"userFirstName\")},\r",
+							"    { name: \"get by firstName with invalid endpoint\", url: pm.environment.get(\"baseURL\") + pm.environment.get(\"invalidEndpoint\") + pm.collectionVariables.get(\"userFirstName\")},\r",
+							"    { name: \"get by firstName with special characters\", url: pm.environment.get(\"baseURL\") +  pm.environment.get(\"getByNameEndpoint\") + pm.collectionVariables.get(\"userFirstNameSplChar\")},\r",
+							"    { name: \"get by firstName with numbers\", url: pm.environment.get(\"baseURL\")  +  pm.environment.get(\"getByNameEndpoint\") + pm.collectionVariables.get(\"userFirstNameNumber\")},\r",
+							"    { name: \"get by non-existing firstName\", url: pm.environment.get(\"baseURL\")  +  pm.environment.get(\"getByNameEndpoint\") + pm.collectionVariables.get(\"userFirstNameNon\")}\r",
+							"];\r",
+							"\r",
+							"if (!pm.environment.get(\"scenarioIndex\")) {\r",
+							"    pm.environment.set(\"scenarioIndex\", 0);\r",
+							"}\r",
+							"\r",
+							"let scenarioIndex = pm.environment.get(\"scenarioIndex\");\r",
+							"\r",
+							"if (scenarioIndex < scenarios.length) {\r",
+							"    let currentScenario = scenarios[scenarioIndex];\r",
+							"    pm.request.url = currentScenario.url;\r",
+							"} else {\r",
+							"    pm.environment.unset(\"scenarioIndex\");\r",
+							"    pm.execution.setNextRequest(\"Update user with valid and invalid request body\");\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const scenarios = [\r",
+							"    { name: \"get by firstName\", expected: commonTests.validGetPutRequest },    \r",
+							"    { name: \"get by firstName with invalid baseURL\", expected: commonTests.notFoundRequest },\r",
+							"    { name: \"get by firstName with invalid endpoint\", expected: commonTests.notFoundRequest },\r",
+							"    { name: \"get by firstName with special characters\", expected: commonTests.notFoundRequest },\r",
+							"    { name: \"get by firstName with numbers\", expected: commonTests.notFoundRequest },\r",
+							"    { name: \"get by non-existing firstName\", expected: commonTests.notFoundRequest }\r",
+							"];\r",
+							"\r",
+							"let scenarioIndex = pm.environment.get(\"scenarioIndex\");\r",
+							"\r",
+							"if (scenarioIndex < scenarios.length) {\r",
+							"    let currentScenario = scenarios[scenarioIndex];\r",
+							"\r",
+							"   try {\r",
+							"    if (currentScenario.name === \"get by firstName\" || \r",
+							"        currentScenario.name === \"get by firstName with invalid baseURL\" || \r",
+							"        currentScenario.name === \"get by firstName with invalid endpoint\") {\r",
+							"        \r",
+							"        currentScenario.expected();\r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);\r",
+							"        \r",
+							"    } else if (currentScenario.name === \"get by firstName with special characters\") {\r",
+							"        currentScenario.expected();\r",
+							"        var jsondata = pm.response.json();\r",
+							"        const userFirstName = pm.collectionVariables.get(\"userFirstNameSplChar\");\r",
+							"        \r",
+							"        pm.test(\"User first name with special characters error message\", () => {\r",
+							"            pm.expect(jsondata.message).to.be.equal(`User with userFirstName ${userFirstName} not found!`);\r",
+							"        });\r",
+							"        \r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);\r",
+							"        \r",
+							"    } else if (currentScenario.name === \"get by firstName with numbers\") {\r",
+							"        currentScenario.expected();\r",
+							"        var jsondata = pm.response.json();\r",
+							"        const userFirstName = pm.collectionVariables.get(\"userFirstNameNumber\");\r",
+							"        \r",
+							"        pm.test(\"User first name with numbers error message\", () => {\r",
+							"            pm.expect(jsondata.message).to.be.equal(`User with userFirstName ${userFirstName} not found!`);\r",
+							"        });\r",
+							"        \r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);\r",
+							"        \r",
+							"    } else if (currentScenario.name === \"get by non-existing firstName\") {\r",
+							"        currentScenario.expected();\r",
+							"        var jsondata = pm.response.json();\r",
+							"        const userFirstName = pm.collectionVariables.get(\"userFirstNameNon\");\r",
+							"        \r",
+							"        pm.test(\"User first name non-existing error message\", () => {\r",
+							"            pm.expect(jsondata.message).to.be.equal(`User with userFirstName ${userFirstName} not found!`);\r",
+							"        });\r",
+							"        \r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);        \r",
+							"    }\r",
+							"} catch (error) {\r",
+							"    console.error(`Test failed for ${currentScenario.name}: ${error.message}`);\r",
+							"}\r",
+							"    if (scenarioIndex < scenarios.length -1) {\r",
+							"    pm.environment.set(\"scenarioIndex\", scenarioIndex + 1);\r",
+							"\r",
+							"    pm.execution.setNextRequest(pm.info.requestName);\r",
+							"} else {\r",
+							"    pm.environment.unset(\"scenarioIndex\"); \r",
+							"    pm.execution.setNextRequest(\"Update user with valid and invalid request body\"); \r",
+							"}\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Update user with valid and invalid request body",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							" var jsondata = pm.response.json();\r",
+							"var scenario = pm.variables.get(\"scenario\");\r",
+							"var expectedMessage = pm.variables.get(\"expectedMessage\");\r",
+							"\r",
+							"if (scenario === \"update all the fields\" || scenario === \"update without mandatory fields\") {\r",
+							"commonTests.validGetPutRequest();\r",
+							"commonTests.responseTime();\r",
+							"commonTests.headerValidations();\r",
+							"}  else if (scenario === \"update with existing contact number\" || scenario === \"update with existing email id\" ) {\r",
+							"    commonTests.conflictRequest();\r",
+							"    pm.test(scenario, () => {\r",
+							"pm.expect(jsondata.message).to.be.equal(expectedMessage);\r",
+							"});\r",
+							" } else {\r",
+							"    commonTests.invalidInputsRequest();\r",
+							"    pm.test(scenario, () => {\r",
+							"pm.expect(jsondata.message).to.be.equal(expectedMessage);\r",
+							"});\r",
+							" }\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var userIds = pm.collectionVariables.get(\"userIds\");\r",
+							"userIds = JSON.parse(userIds);\r",
+							"var userIdToPut = userIds[0];\r",
+							"pm.request.url = pm.environment.get(\"baseURL\") + pm.environment.get(\"putEndpoint\")+userIdToPut;"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"user_first_name\":  \"{{user_first_name}}\",\r\n \"user_last_name\":  \"{{user_last_name}}\",        \r\n \"user_contact_number\": \"{{user_contact_number}}\",   \r\n \"user_email_id\": \"{{user_email_id}}\",\r\n\r\n\"userAddress\": {\r\n   \"plotNumber\": \"{{plotNumber}}\",\r\n   \"street\": \"{{street}}\",\r\n   \"state\": \"{{state}}\",\r\n    \"country\": \"{{country}}\",\r\n   \"zipCode\": \"{{zipCode}}\"\r\n }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update user without authorization",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"commonTests.unauthorizedRequest();\r",
+							"commonTests.responseTime();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var userIds = pm.collectionVariables.get(\"userIds\");\r",
+							"userIds = JSON.parse(userIds);\r",
+							"var userIdToPut = userIds[0];\r",
+							"pm.request.url = pm.environment.get(\"baseURL\") + pm.environment.get(\"putEndpoint\")+userIdToPut;"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"user_first_name\":  \"{{user_first_name}}\",\r\n \"user_last_name\":  \"{{user_last_name}}\",        \r\n \"user_contact_number\": \"{{user_contact_number}}\",   \r\n \"user_email_id\": \"{{user_email_id}}\",\r\n\r\n\"userAddress\": {\r\n   \"plotNumber\": \"{{plotNumber}}\",\r\n   \"street\": \"{{street}}\",\r\n   \"state\": \"{{state}}\",\r\n    \"country\": \"{{country}}\",\r\n   \"zipCode\": \"{{zipCode}}\"\r\n }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update user with invalid baseURL",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"commonTests.notFoundRequest();\r",
+							"commonTests.responseTime();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var userIds = pm.collectionVariables.get(\"userIds\");\r",
+							"userIds = JSON.parse(userIds);\r",
+							"var userIdToPut = userIds[0];\r",
+							"pm.request.url = pm.environment.get(\"invalidBaseURL\") + pm.environment.get(\"putEndpoint\")+userIdToPut;"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"user_first_name\":  \"{{user_first_name}}\",\r\n \"user_last_name\":  \"{{user_last_name}}\",        \r\n \"user_contact_number\": \"{{user_contact_number}}\",   \r\n \"user_email_id\": \"{{user_email_id}}\",\r\n\r\n\"userAddress\": {\r\n   \"plotNumber\": \"{{plotNumber}}\",\r\n   \"street\": \"{{street}}\",\r\n   \"state\": \"{{state}}\",\r\n    \"country\": \"{{country}}\",\r\n   \"zipCode\": \"{{zipCode}}\"\r\n }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update user with invalid endpoint",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var userIds = pm.collectionVariables.get(\"userIds\");\r",
+							"userIds = JSON.parse(userIds);\r",
+							"var userIdToPut = userIds[0];\r",
+							"pm.request.url = pm.environment.get(\"invalidBaseURL\") + pm.environment.get(\"invalidEndpoint\")+userIdToPut;"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"user_first_name\":  \"{{user_first_name}}\",\r\n \"user_last_name\":  \"{{user_last_name}}\",        \r\n \"user_contact_number\": \"{{user_contact_number}}\",   \r\n \"user_email_id\": \"{{user_email_id}}\",\r\n\r\n\"userAddress\": {\r\n   \"plotNumber\": \"{{plotNumber}}\",\r\n   \"street\": \"{{street}}\",\r\n   \"state\": \"{{state}}\",\r\n    \"country\": \"{{country}}\",\r\n   \"zipCode\": \"{{zipCode}}\"\r\n }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete user by ID",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var userIds = pm.collectionVariables.get(\"userIds\");\r",
+							"userIds = JSON.parse(userIds);\r",
+							"var userIdToDelete = userIds[0];\r",
+							"\r",
+							"const scenarios = [\r",
+							"    { name: \"delete by ID with invalid baseURL\", url: pm.environment.get(\"invalidBaseURL\") + pm.environment.get(\"deleteByIdEndpoint\") + userIdToDelete},\r",
+							"    { name: \"delete by ID with invalid endpoint\", url: pm.environment.get(\"baseURL\") + pm.environment.get(\"invalidEndpoint\") + \"/\" + userIdToDelete},\r",
+							"    { name: \"delete by ID with special characters\", url: pm.environment.get(\"baseURL\") + pm.environment.get(\"deleteByIdEndpoint\") + pm.collectionVariables.get(\"userIDSplChar\")},\r",
+							"    { name: \"delete by ID with alphabets\", url: pm.environment.get(\"baseURL\")  + pm.environment.get(\"deleteByIdEndpoint\") + pm.collectionVariables.get(\"userIDChar\")},\r",
+							"    { name: \"delete by non-existing ID\", url: pm.environment.get(\"baseURL\")  + pm.environment.get(\"deleteByIdEndpoint\") + pm.collectionVariables.get(\"userIDNon\")},\r",
+							"    { name: \"delete by ID\", url: pm.environment.get(\"baseURL\") + pm.environment.get(\"deleteByIdEndpoint\") + userIdToDelete}\r",
+							"];\r",
+							"\r",
+							"if (!pm.environment.get(\"scenarioIndex\")) {\r",
+							"    pm.environment.set(\"scenarioIndex\", 0);\r",
+							"}\r",
+							"\r",
+							"let scenarioIndex = pm.environment.get(\"scenarioIndex\");\r",
+							"\r",
+							"if (scenarioIndex < scenarios.length) {\r",
+							"    let currentScenario = scenarios[scenarioIndex];\r",
+							"    pm.request.url = currentScenario.url;\r",
+							"} else {\r",
+							"    pm.environment.unset(\"scenarioIndex\");\r",
+							"    pm.execution.setNextRequest(\"Delete user by firstName\");\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const scenarios = [    \r",
+							"    { name: \"delete by ID with invalid baseURL\", expected: commonTests.notFoundRequest },\r",
+							"    { name: \"delete by ID with invalid endpoint\", expected: commonTests.notFoundRequest },\r",
+							"    { name: \"delete by ID with special characters\", expected: commonTests.notFoundRequest },\r",
+							"    { name: \"delete by ID with alphabets\", expected: commonTests.notFoundRequest },\r",
+							"    { name: \"delete by non-existing ID\", expected: commonTests.notFoundRequest },    \r",
+							"    { name: \"delete by ID\", expected: commonTests.validGetPutRequest }\r",
+							"];\r",
+							"\r",
+							"let scenarioIndex = pm.environment.get(\"scenarioIndex\");\r",
+							"\r",
+							"if (scenarioIndex < scenarios.length) {\r",
+							"    let currentScenario = scenarios[scenarioIndex];\r",
+							"\r",
+							"   try {\r",
+							"    if (currentScenario.name === \"delete by ID\") {\r",
+							"        currentScenario.expected();\r",
+							"        var jsondata = pm.response.json();\r",
+							"               \r",
+							"        pm.test(\"User deleted success message\", () => {\r",
+							"            pm.expect(jsondata.message).to.be.equal(`User is deleted successfully`);\r",
+							"        });\r",
+							"        \r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);\r",
+							"\r",
+							"    } else if (currentScenario.name === \"delete by ID with invalid baseURL\" || \r",
+							"        currentScenario.name === \"delete by ID with invalid endpoint\") {        \r",
+							"        currentScenario.expected();\r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);\r",
+							"        \r",
+							"    } else if (currentScenario.name === \"delete by ID with special characters\") {\r",
+							"        currentScenario.expected();\r",
+							"        var jsondata = pm.response.json();\r",
+							"        const userID = pm.collectionVariables.get(\"userIDSplChar\");\r",
+							"        \r",
+							"        pm.test(\"User ID with special characters error message\", () => {\r",
+							"            pm.expect(jsondata.message).to.be.equal(`User not found with id: ${userID}`);\r",
+							"        });\r",
+							"        \r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);\r",
+							"        \r",
+							"    } else if (currentScenario.name === \"delete by ID with alphabets\") {\r",
+							"        currentScenario.expected();\r",
+							"        var jsondata = pm.response.json();\r",
+							"        const userID = pm.collectionVariables.get(\"userIDChar\");\r",
+							"        \r",
+							"        pm.test(\"User ID with alphabets error message\", () => {\r",
+							"            pm.expect(jsondata.message).to.be.equal(`User not found with id: ${userID}`);\r",
+							"        });\r",
+							"        \r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);\r",
+							"        \r",
+							"    } else if (currentScenario.name === \"delete by non-existing ID\") {\r",
+							"        currentScenario.expected();\r",
+							"        var jsondata = pm.response.json();\r",
+							"        const userID = pm.collectionVariables.get(\"userIDNon\");\r",
+							"        \r",
+							"        pm.test(\"User ID non-existing error message\", () => {\r",
+							"            pm.expect(jsondata.message).to.be.equal(`User not found with id: ${userID}`);\r",
+							"        });\r",
+							"        \r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);        \r",
+							"    }\r",
+							"} catch (error) {\r",
+							"    console.error(`Test failed for ${currentScenario.name}: ${error.message}`);\r",
+							"}\r",
+							"    if (scenarioIndex < scenarios.length -1) {\r",
+							"    pm.environment.set(\"scenarioIndex\", scenarioIndex + 1);\r",
+							"\r",
+							"    pm.execution.setNextRequest(pm.info.requestName);\r",
+							"} else {\r",
+							"    pm.environment.unset(\"scenarioIndex\"); \r",
+							"    pm.execution.setNextRequest(\"Delete user by firstName\"); \r",
+							"}\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete user by firstName",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const scenarios = [\r",
+							"    { name: \"delete by firstName with invalid baseURL\", url: pm.environment.get(\"invalidBaseURL\") + pm.environment.get(\"deleteByNameEndpoint\") + pm.collectionVariables.get(\"userFirstName\")},\r",
+							"    { name: \"delete by firstName with invalid endpoint\", url: pm.environment.get(\"baseURL\") + pm.environment.get(\"invalidEndpoint\") + pm.collectionVariables.get(\"userFirstName\")},\r",
+							"    { name: \"delete by firstName with special characters\", url: pm.environment.get(\"baseURL\") +  pm.environment.get(\"deleteByNameEndpoint\") + pm.collectionVariables.get(\"userFirstNameSplChar\")},\r",
+							"    { name: \"delete by firstName with numbers\", url: pm.environment.get(\"baseURL\")  + pm.environment.get(\"deleteByNameEndpoint\") + pm.collectionVariables.get(\"userFirstNameNumber\")},\r",
+							"    { name: \"delete by non-existing firstName\", url: pm.environment.get(\"baseURL\")  +  pm.environment.get(\"deleteByNameEndpoint\") + pm.collectionVariables.get(\"userFirstNameNon\")},    \r",
+							"    { name: \"delete by firstName\", url: pm.environment.get(\"baseURL\") +  pm.environment.get(\"deleteByNameEndpoint\") + pm.collectionVariables.get(\"userFirstName\")}\r",
+							"];\r",
+							"\r",
+							"if (!pm.environment.get(\"scenarioIndex\")) {\r",
+							"    pm.environment.set(\"scenarioIndex\", 0);\r",
+							"}\r",
+							"\r",
+							"let scenarioIndex = pm.environment.get(\"scenarioIndex\");\r",
+							"\r",
+							"if (scenarioIndex < scenarios.length) {\r",
+							"    let currentScenario = scenarios[scenarioIndex];\r",
+							"    pm.request.url = currentScenario.url;\r",
+							"} else {\r",
+							"    pm.environment.unset(\"scenarioIndex\");\r",
+							"    pm.execution.setNextRequest(null);\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const scenarios = [     \r",
+							"    { name: \"delete by firstName with invalid baseURL\", expected: commonTests.notFoundRequest },\r",
+							"    { name: \"delete by firstName with invalid endpoint\", expected: commonTests.notFoundRequest },\r",
+							"    { name: \"delete by firstName with special characters\", expected: commonTests.notFoundRequest },\r",
+							"    { name: \"delete by firstName with numbers\", expected: commonTests.notFoundRequest },\r",
+							"    { name: \"delete by non-existing firstName\", expected: commonTests.notFoundRequest },\r",
+							"    { name: \"delete by firstName\", expected: commonTests.validGetPutRequest }\r",
+							"];\r",
+							"\r",
+							"let scenarioIndex = pm.environment.get(\"scenarioIndex\");\r",
+							"\r",
+							"if (scenarioIndex < scenarios.length) {\r",
+							"    let currentScenario = scenarios[scenarioIndex];\r",
+							"\r",
+							"   try {\r",
+							"    if (currentScenario.name === \"delete by firstName\") {\r",
+							"        currentScenario.expected();\r",
+							"        var jsondata = pm.response.json();\r",
+							"               \r",
+							"        pm.test(\"User deleted success message\", () => {\r",
+							"            pm.expect(jsondata.message).to.be.equal(`User is deleted successfully`);\r",
+							"        });\r",
+							"        \r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);\r",
+							"\r",
+							"    } else if (currentScenario.name === \"delete by firstName with invalid baseURL\" || \r",
+							"        currentScenario.name === \"delete by firstName with invalid endpoint\") {\r",
+							"        \r",
+							"        currentScenario.expected();\r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);\r",
+							"        \r",
+							"    } else if (currentScenario.name === \"delete by firstName with special characters\") {\r",
+							"        currentScenario.expected();\r",
+							"        var jsondata = pm.response.json();\r",
+							"        const userFirstName = pm.collectionVariables.get(\"userFirstNameSplChar\");\r",
+							"        \r",
+							"        pm.test(\"User firstName with special characters error message\", () => {\r",
+							"            pm.expect(jsondata.message).to.be.equal(`User does not exist with name '${userFirstName}'`);\r",
+							"        });\r",
+							"        \r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);\r",
+							"        \r",
+							"    } else if (currentScenario.name === \"delete by firstName with numbers\") {\r",
+							"        currentScenario.expected();\r",
+							"        var jsondata = pm.response.json();\r",
+							"        const userFirstName = pm.collectionVariables.get(\"userFirstNameNumber\");\r",
+							"        \r",
+							"        pm.test(\"User firstName with alphabets error message\", () => {\r",
+							"            pm.expect(jsondata.message).to.be.equal(`User does not exist with name '${userFirstName}'`);\r",
+							"        });\r",
+							"        \r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);\r",
+							"        \r",
+							"    } else if (currentScenario.name === \"delete firstName non-existing ID\") {\r",
+							"        currentScenario.expected();\r",
+							"        var jsondata = pm.response.json();\r",
+							"        const userFirstName = pm.collectionVariables.get(\"userFirstNameNon\");\r",
+							"        \r",
+							"        pm.test(\"User firstName non-existing error message\", () => {\r",
+							"            pm.expect(jsondata.message).to.be.equal(`User does not exist with name '${userFirstName}'`);\r",
+							"        });\r",
+							"        \r",
+							"        console.log(`Test passed for: ${currentScenario.name}`);        \r",
+							"    }\r",
+							"} catch (error) {\r",
+							"    console.error(`Test failed for ${currentScenario.name}: ${error.message}`);\r",
+							"}\r",
+							"     if (scenarioIndex < scenarios.length -1) {\r",
+							"    pm.environment.set(\"scenarioIndex\", scenarioIndex + 1);\r",
+							"\r",
+							"    pm.execution.setNextRequest(pm.info.requestName);\r",
+							"} else {\r",
+							"    pm.environment.unset(\"scenarioIndex\");\r",
+							"    pm.collectionVariables.unset(\"userIds\");\r",
+							"    pm.execution.setNextRequest(null); \r",
+							"}\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": []
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "{{password}}",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "{{userName}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"// Load data from json file to collection variable 'requestData'\r",
+					"if(typeof pm.variables.get('requestData') !== 'object')\r",
+					"{\r",
+					"    pm.variables.set('requestData', pm.iterationData.toObject());\r",
+					"}\r",
+					"// Read input data from collection variable 'requestData'\r",
+					"const requestData = pm.variables.get('requestData');\r",
+					"\r",
+					"// If 'requestData'/input data is empty\r",
+					"if(typeof requestData != 'object' || Object.keys(requestData).length === 0)\r",
+					"{\r",
+					"    console.log('No external data provided/data set is empty');\r",
+					"    return;\r",
+					"}\r",
+					"\r",
+					"// Find current request's data\r",
+					"const currentRequest = requestData.requests.filter(({name}) => name === pm.info.requestName)[0];\r",
+					"\r",
+					"// If no data found for current request\r",
+					"if(!currentRequest){\r",
+					"    console.log('Request ${pm.info.requestName} has no data.');\r",
+					"}\r",
+					"\r",
+					"// If data found for current request\r",
+					"if(currentRequest){\r",
+					"    // Expose variables\r",
+					"    const variables = currentRequest.data.shift();\r",
+					"\r",
+					"    Object.entries(variables).forEach(([key, value]) => {\r",
+					"        pm.variables.set(key, value);\r",
+					"    });\r",
+					"    pm.variables.set('requestData', requestData);\r",
+					"\r",
+					"    // Declare next request\r",
+					"    if(currentRequest.data.length > 0){\r",
+					"        pm.execution.setNextRequest(pm.info.requestName);\r",
+					"    }\r",
+					"}\t\t"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"commonTests = \r",
+					"{\r",
+					"    validPostRequest: function() {\r",
+					"       pm.test(\"Status code is 201\", () => {\r",
+					"            pm.response.to.have.status(201);\r",
+					"        }); \r",
+					"\r",
+					"        pm.test(\"Status code name has string\", () => {\r",
+					"            pm.response.to.have.status(\"Created\");\r",
+					"        });          \r",
+					"    },\r",
+					"    validGetPutRequest: function () {\r",
+					"        //Status code\r",
+					"        pm.test(\"Status code is 200\", () => {\r",
+					"            pm.response.to.have.status(200);\r",
+					"        });\r",
+					"\r",
+					"        pm.test(\"Status code name has string\", () => {\r",
+					"            pm.response.to.have.status(\"OK\");\r",
+					"        });\r",
+					"\r",
+					"        //Header \r",
+					"        pm.test(\"Content-Type is present\", () => {\r",
+					"            pm.response.to.have.header(\"Content-Type\");\r",
+					"        });\r",
+					"\r",
+					"        pm.test(\"Content-Type header is application/json\", () => {\r",
+					"            pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql('application/json');\r",
+					"        });\r",
+					"\r",
+					"        //Response time\r",
+					"        pm.test(\"Response time is less than 1000ms\", () => {\r",
+					"            pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+					"        });\r",
+					"    },\r",
+					"    unauthorizedRequest: function () {\r",
+					"        //Unauthorized\r",
+					"        pm.test(\"Status code is 401\", () => {\r",
+					"            pm.response.to.have.status(401);\r",
+					"        });\r",
+					"\r",
+					"        pm.test(\"Status code name has string\", () => {\r",
+					"            pm.response.to.have.status(\"Unauthorized\");\r",
+					"        });\r",
+					"    },\r",
+					"    notFoundRequest: function () {\r",
+					"        //Invalid URL \r",
+					"        pm.test(\"Status code is 404\", () => {\r",
+					"            pm.response.to.have.status(404);\r",
+					"        });\r",
+					"\r",
+					"        pm.test(\"Status code name has string\", () => {\r",
+					"            pm.response.to.have.status(\"Not Found\");\r",
+					"        });\r",
+					"    },\r",
+					"    invalidInputsRequest: function () {\r",
+					"        //Unauthorized\r",
+					"        pm.test(\"Status code is 400\", () => {\r",
+					"            pm.response.to.have.status(400);\r",
+					"        });\r",
+					"\r",
+					"        pm.test(\"Status code name has string\", () => {\r",
+					"            pm.response.to.have.status(\"Bad Request\");\r",
+					"        });\r",
+					"    },\r",
+					"    conflictRequest: function () {\r",
+					"        pm.test(\"Status code is 409\", () => {\r",
+					"            pm.response.to.have.status(409);\r",
+					"        });\r",
+					"\r",
+					"        pm.test(\"Status code name has string\", () => {\r",
+					"            pm.response.to.have.status(\"Conflict\");\r",
+					"        });\r",
+					"    },\r",
+					"    responseTime: function() {\r",
+					"        pm.test(\"Response time is less than 2000ms\", function () {\r",
+					"            pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+					"        });\r",
+					"    },\r",
+					"    headerValidations: function() {\r",
+					"        //Header \r",
+					"        pm.test(\"Content-Type is present\", () => {\r",
+					"            pm.response.to.have.header(\"Content-Type\");\r",
+					"        });\r",
+					"\r",
+					"        pm.test(\"Content-Type header is application/json\", () => {\r",
+					"            pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql('application/json');\r",
+					"        });\r",
+					"\r",
+					"    },\r",
+					"    PostSchemaValidation: function() {\r",
+					"        pm.test(\"Response schema is valid\", function () {\r",
+					"    const schema = {\r",
+					"        \"$ref\": \"#/definitions/Welcome7\",\r",
+					"        \"definitions\": {\r",
+					"            \"Welcome7\": {\r",
+					"                \"type\": \"object\",\r",
+					"                \"additionalProperties\": false,\r",
+					"                \"properties\": {\r",
+					"                    \"userAddress\": {\r",
+					"                        \"$ref\": \"#/definitions/UserAddress\"\r",
+					"                    },\r",
+					"                    \"user_id\": {\r",
+					"                        \"type\": \"integer\"\r",
+					"                    },\r",
+					"                    \"user_first_name\": {\r",
+					"                        \"type\": \"string\"\r",
+					"                    },\r",
+					"                    \"user_last_name\": {\r",
+					"                        \"type\": \"string\"\r",
+					"                    },\r",
+					"                    \"user_contact_number\": {\r",
+					"                        \"type\": \"integer\"\r",
+					"                    },\r",
+					"                    \"user_email_id\": {\r",
+					"                        \"type\": \"string\"\r",
+					"                    },\r",
+					"                    \"creation_time\": {\r",
+					"                        \"type\": \"string\",\r",
+					"                        \"format\": \"date-time\"\r",
+					"                    },\r",
+					"                    \"last_mod_time\": {\r",
+					"                        \"type\": \"string\",\r",
+					"                        \"format\": \"date-time\"\r",
+					"                    }\r",
+					"                },\r",
+					"                \"required\": [\r",
+					"                    \"creation_time\",\r",
+					"                    \"last_mod_time\",\r",
+					"                    \"user_contact_number\",\r",
+					"                    \"user_email_id\",\r",
+					"                    \"user_first_name\",\r",
+					"                    \"user_id\",\r",
+					"                    \"user_last_name\"\r",
+					"                ],\r",
+					"                \"title\": \"Welcome7\"\r",
+					"            },\r",
+					"            \"UserAddress\": {\r",
+					"                \"type\": \"object\",\r",
+					"                \"additionalProperties\": false,\r",
+					"                \"properties\": {\r",
+					"                    \"addressId\": {\r",
+					"                        \"type\": \"integer\"\r",
+					"                    },\r",
+					"                    \"plotNumber\": {\r",
+					"                        \"oneOf\": [\r",
+					"                            { \"type\": \"string\" },\r",
+					"                            { \"type\": \"null\" }\r",
+					"                        ]\r",
+					"                    },\r",
+					"                    \"street\": {\r",
+					"                       \"oneOf\": [\r",
+					"                            { \"type\": \"string\" },\r",
+					"                            { \"type\": \"null\" }\r",
+					"                        ]\r",
+					"                    },\r",
+					"                    \"state\": {\r",
+					"                       \"oneOf\": [\r",
+					"                            { \"type\": \"string\" },\r",
+					"                            { \"type\": \"null\" }\r",
+					"                        ]\r",
+					"                    },\r",
+					"                    \"country\": {\r",
+					"                        \"oneOf\": [\r",
+					"                            { \"type\": \"string\" },\r",
+					"                            { \"type\": \"null\" }\r",
+					"                        ]\r",
+					"                    },\r",
+					"                    \"zipCode\": {\r",
+					"                        \"oneOf\": [\r",
+					"                            { \"type\": \"integer\" },\r",
+					"                            { \"type\": \"null\" }\r",
+					"                        ]\r",
+					"                    }\r",
+					"                },\r",
+					"                \"title\": \"UserAddress\"\r",
+					"            }\r",
+					"        }\r",
+					"    };\r",
+					"\r",
+					"    pm.expect(pm.response.json()).to.have.jsonSchema(schema);\r",
+					"});\r",
+					"    }\r",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "userFirstName",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userIDSplChar",
+			"value": "7365@#$%",
+			"type": "string"
+		},
+		{
+			"key": "userIDChar",
+			"value": "7365abc",
+			"type": "string"
+		},
+		{
+			"key": "userIDNon",
+			"value": "9999999999",
+			"type": "string"
+		},
+		{
+			"key": "userFirstNameSplChar",
+			"value": "minni%^&*",
+			"type": "string"
+		},
+		{
+			"key": "userFirstNameNumber",
+			"value": "minni12345",
+			"type": "string"
+		},
+		{
+			"key": "userFirstNameNon",
+			"value": "jemimatestname",
+			"type": "string"
+		}
+	]
+}
